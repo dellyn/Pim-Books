@@ -1,3 +1,13 @@
 body {
   background-color: rgb(0, 41, 41);
 }
+div,
+p,
+span,
+a,
+h1,
+h2,
+h3 {
+  padding: 0;
+  margin: 0;
+}

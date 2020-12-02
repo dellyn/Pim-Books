@@ -32,7 +32,23 @@ const SearchPanel = () => {
 
   const renderItems = booksResult.map((item: any, idx) => {
     const imageLink = item.imageLinks;
-    const title = item.title;
+    let title = item.title;
+    if (title.length > 20) {
+
+      const titleArr = title.split(" ");
+      let lenCounter: number = 0;
+      let newTitle: string = "";
+
+      titleArr.forEach((item: string) => {
+        lenCounter += item.length;
+        if (lenCounter <= 20) {
+          newTitle += " " + item;
+          return newTitle;
+        }
+      });
+      
+      title = newTitle + "..";
+    }
     return (
       <div className="result-book" key={idx}>
         <img src={imageLink} alt="" />
