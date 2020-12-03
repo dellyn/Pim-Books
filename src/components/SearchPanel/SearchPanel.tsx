@@ -8,14 +8,12 @@ const SearchPanel = () => {
   const [booksResult, setBooksResult] = useState([]);
 
   const updateData = () => {
-    bookService
-      .getSearchBooksData(searchString)
-      .then((body) => {
-        setBooksResult(body);
-      })
-      .catch(() => {
-        console.log("Search result is empty");
-      });
+    bookService.getSearchBooksData(searchString).then((body) => {
+      setBooksResult(body);
+    });
+    // .catch(() => {
+    //   console.log("Search result is empty");
+    // });
   };
 
   const onSearchChange = (e: any) => {
@@ -34,7 +32,6 @@ const SearchPanel = () => {
     const imageLink = item.imageLinks;
     let title = item.title;
     if (title.length > 20) {
-
       const titleArr = title.split(" ");
       let lenCounter: number = 0;
       let newTitle: string = "";
@@ -46,7 +43,7 @@ const SearchPanel = () => {
           return newTitle;
         }
       });
-      
+
       title = newTitle + "..";
     }
     return (

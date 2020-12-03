@@ -5,17 +5,23 @@ export default class SwapiService {
   getResource = async (url: string) => {
     console.log(url);
 
-    const res = await fetch(url, {
-      method: "GET",
-    });
+    const res = await fetch(url);
     if (!res.ok) {
-      throw new Error(`Could not fetch ${url} +, reived ${res.status}`);
+      throw new Error(`Could not fetch ${url} +, reсived ${res.status}`);
     }
     return await res.json();
   };
   getSearchBooksData = async (searchString: string) => {
-    const params: string = "+inauthor:keyes&";
-    const url: string = this._apiBase + searchString + params + this._apiKey;
+    // const oldParams: string = "+inauthor:keyes&";
+    const params = "&";
+
+    const configUrl = (...arg: any) => {
+      return arg.reduce((a: string, c: string) => {
+        return a + c;
+      }, "");
+    };
+
+    const url = configUrl(this._apiBase, searchString, params, this._apiKey);
 
     const res = await this.getResource(url);
     return res.items.map(this._transformSearchBooksData);
