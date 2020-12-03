@@ -12,7 +12,7 @@ interface Book {
 }
 
 const SearchPanel = () => {
-  const [searchString, setSearchString] = useState<string>("asd");
+  const [searchString, setSearchString] = useState<string>("");
   const [booksResult, setBooksResult] = useState<Book[]>([]);
   const [maxResults] = useState<number>(30);
   const [startIndex, setStartIndex] = useState<number>(0);
@@ -31,7 +31,7 @@ const SearchPanel = () => {
         setStatusSearch(true);
       })
       .catch(() => {
-        console.error("search error");
+        throw new Error("search error");
       });
   };
 
@@ -41,7 +41,7 @@ const SearchPanel = () => {
   };
 
   const onSearchSubmit = () => {
-    updateData();
+    searchString && updateData();
   };
 
   const renderItems = booksResult.map((book: Book, idx) => {
@@ -82,6 +82,8 @@ const SearchPanel = () => {
               type="text"
               onChange={onSearchChange}
               value={searchString}
+              placeholder="Search"
+              autoFocus={true}
             />
             <input
               className="search-labels-button"
