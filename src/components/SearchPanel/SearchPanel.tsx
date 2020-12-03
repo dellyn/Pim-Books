@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { getSearchBooksData } from "../../service/BookService";
+import {
+  getSearchBooksData,
+  getLiveBooksData,
+} from "../../service/BookService";
 import "./SearchPanel.scss";
 
 interface Book {
@@ -14,6 +17,7 @@ interface Book {
 const SearchPanel = () => {
   const [searchString, setSearchString] = useState<string>("");
   const [booksResult, setBooksResult] = useState<Book[]>([]);
+  const [booksLiveResult, setBooksLiveResult] = useState<Book[]>([]);
   const [maxResults] = useState<number>(30);
   const [startIndex, setStartIndex] = useState<number>(0);
   const [statusSearch, setStatusSearch] = useState<boolean>(false);
@@ -38,6 +42,14 @@ const SearchPanel = () => {
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const searchString: string = e.target.value;
     setSearchString(searchString);
+    getLiveBooksData(searchString)
+      .then((bookArray: Book[]) => {
+        setBooksLiveResult(bookArray);
+        setStatusSearch(true);
+      })
+      .catch(() => {
+        throw new Error("search error");
+      });
   };
 
   const onSearchSubmit = () => {
@@ -45,8 +57,6 @@ const SearchPanel = () => {
   };
 
   const renderItems = booksResult.map((book: Book, idx) => {
-    console.log(book);
-
     const imageLink = book.imageLinks;
     let title = book.title;
 
@@ -61,7 +71,6 @@ const SearchPanel = () => {
           return newTitle;
         }
       });
-
       title = newTitle + "..";
     }
     return (
@@ -71,6 +80,9 @@ const SearchPanel = () => {
       </div>
     );
   });
+  const renderLiveItems = booksLiveResult.map((book: Book, idx) => (
+    <li key={idx}>{book.title}</li>
+  ));
 
   return (
     <div className="search">
@@ -96,6 +108,7 @@ const SearchPanel = () => {
             Next 5 Books
           </button>
         </form>
+        <ul className="result-live-list">{renderLiveItems}</ul>
         <div className="result">{renderItems}</div>
       </div>
     </div>

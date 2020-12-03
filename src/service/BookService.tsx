@@ -8,6 +8,10 @@ export const getResource = async (url: string) => {
   }
   return await res.json();
 };
+
+const configUrl = (...arg: any) =>
+  arg.reduce((a: string, c: string) => a + c, "");
+
 export const getSearchBooksData = async (
   searchString: string,
   maxResults: number,
@@ -15,15 +19,27 @@ export const getSearchBooksData = async (
 ) => {
   const params = `&startIndex=${startIndex}&maxResults=${maxResults}&`;
 
-  const configUrl = (...arg: any) =>
-    arg.reduce((a: string, c: string) => a + c, "");
-
   const url = configUrl(apiBase, searchString, params, apiKey);
 
   const res = await getResource(url);
   return res.items.map(transformSearchBooksData);
 };
 
+export const getLiveBooksData = async (searchString: string) => {
+  const url = configUrl(
+    apiBase,
+    searchString,
+    `&startIndex=0&maxResults=10&`,
+    apiKey
+  );
+  const res = await getResource(url);
+  return res.items.map(transformLiveData);
+};
+export const transformLiveData = (book: any) => {
+  return {
+    title: book.volumeInfo.title,
+  };
+};
 export const transformSearchBooksData = (book: any) => {
   const { id, etag, searchInfo, selfLink, volumeInfo } = book;
   const { imageLinks, title } = volumeInfo;
