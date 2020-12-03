@@ -3,7 +3,7 @@
   margin: 20px 0px;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 90vh;
   form {
     text-align: center;
 
@@ -71,4 +71,8 @@
       }
     }
   }
+}
+
+.dn {
+  display: none !important;
 }

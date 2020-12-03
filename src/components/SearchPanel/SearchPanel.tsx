@@ -1,45 +1,63 @@
-import React, { useState, useEffect } from "react";
-import BookService from "../../service";
+import React, { useState } from "react";
+import { getSearchBooksData } from "../../service/BookService";
 import "./SearchPanel.scss";
 
-const SearchPanel = () => {
-  const bookService = new BookService();
-  const [searchString, setSearchString] = useState("javascript");
-  const [booksResult, setBooksResult] = useState([]);
+interface Book {
+  id: string;
+  title: string;
+  selfLink: string;
+  authors: string[];
+  textSnippet: string;
+  imageLinks: string;
+}
 
-  const updateData = () => {
-    bookService.getSearchBooksData(searchString).then((body) => {
-      setBooksResult(body);
-    });
-    // .catch(() => {
-    //   console.log("Search result is empty");
-    // });
+const SearchPanel = () => {
+  const [searchString, setSearchString] = useState<string>("asd");
+  const [booksResult, setBooksResult] = useState<Book[]>([]);
+  const [maxResults] = useState<number>(30);
+  const [startIndex, setStartIndex] = useState<number>(0);
+  const [statusSearch, setStatusSearch] = useState<boolean>(false);
+
+  const getNextBooks = (): void => {
+    const newStartIndex = startIndex + 5;
+    setStartIndex(newStartIndex);
+    updateData(newStartIndex);
   };
 
-  const onSearchChange = (e: any) => {
+  const updateData = (index: number = startIndex): void => {
+    getSearchBooksData(searchString, maxResults, index)
+      .then((bookArray: Book[]) => {
+        setBooksResult(bookArray);
+        setStatusSearch(true);
+      })
+      .catch(() => {
+        console.error("search error");
+      });
+  };
+
+  const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const searchString: string = e.target.value;
     setSearchString(searchString);
   };
 
-  const onSearchSubmit = (e: any) => {
-    e.preventDefault();
-    if (searchString.length > 0) {
-      updateData();
-    }
+  const onSearchSubmit = () => {
+    updateData();
   };
 
-  const renderItems = booksResult.map((item: any, idx) => {
-    const imageLink = item.imageLinks;
-    let title = item.title;
+  const renderItems = booksResult.map((book: Book, idx) => {
+    console.log(book);
+
+    const imageLink = book.imageLinks;
+    let title = book.title;
+
     if (title.length > 20) {
-      const titleArr = title.split(" ");
       let lenCounter: number = 0;
       let newTitle: string = "";
 
-      titleArr.forEach((item: string) => {
-        lenCounter += item.length;
+      title.split(" ").forEach((word: string) => {
+        lenCounter += word.length;
         if (lenCounter <= 20) {
-          newTitle += " " + item;
+          newTitle += " " + word;
           return newTitle;
         }
       });
@@ -72,6 +90,9 @@ const SearchPanel = () => {
               onClick={onSearchSubmit}
             />
           </div>
+          <button className={statusSearch ? "" : "dn"} onClick={getNextBooks}>
+            Next 5 Books
+          </button>
         </form>
         <div className="result">{renderItems}</div>
       </div>
