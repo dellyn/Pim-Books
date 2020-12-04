@@ -1,32 +1,23 @@
 import React, { useEffect, useState } from "react";
-import {
-  getSearchBooksData,
-  getLiveBooksData,
-} from "../../service/BookService";
+import { getBooksData, getLiveBooksData } from "../../service/BookService";
 import "./SearchPanel.scss";
 
 interface Book {
-  id: string;
-  title: string;
-  selfLink: string;
-  authors: string[];
-  textSnippet: string;
-  imageLinks: string;
+  readonly title: string;
+  readonly selfLink: string;
+  readonly authors: string[];
+  readonly textSnippet: string;
+  readonly imageLinks: string;
 }
 
 const SearchPanel = () => {
   const [searchString, setSearchString] = useState<string>("");
   const [booksResult, setBooksResult] = useState<Book[]>([]);
   const [booksLiveResult, setBooksLiveResult] = useState<Book[]>([]);
-  const [maxResults] = useState<number>(30);
+  const [maxResults] = useState<number>(10);
   const [startIndex, setStartIndex] = useState<number>(0);
   const [statusSearch, setStatusSearch] = useState<boolean>(false);
   const [errorSearch, setErrorSearch] = useState<boolean>(false);
-  const getNextBooks = (): void => {
-    const newStartIndex = startIndex + 5;
-    setStartIndex(newStartIndex);
-    updateData(getSearchBooksData, setBooksResult, newStartIndex);
-  };
 
   const updateData = (
     getData: any,
@@ -49,8 +40,6 @@ const SearchPanel = () => {
     const searchString: string = e.target.value;
     setSearchString(searchString);
     setErrorSearch(false);
-
-    console.log(!booksLiveResult);
   };
 
   useEffect(() => {
@@ -67,7 +56,13 @@ const SearchPanel = () => {
   }, [searchString]);
 
   const onSearchSubmit = (): void => {
-    searchString && updateData(getSearchBooksData, setBooksResult);
+    searchString && updateData(getBooksData, setBooksResult);
+  };
+
+  const getNextBooks = (): void => {
+    const newStartIndex = startIndex + 5;
+    setStartIndex(newStartIndex);
+    updateData(getBooksData, setBooksResult, newStartIndex);
   };
 
   const renderItems = booksResult.map((book: Book, idx) => {
@@ -87,6 +82,7 @@ const SearchPanel = () => {
       });
       title = newTitle + "..";
     }
+
     return (
       <div className="result-book" key={idx}>
         <img src={imageLink} alt="" />
@@ -102,36 +98,41 @@ const SearchPanel = () => {
   return (
     <div className="search">
       <div className="container">
-        <form action="#">
-          <div className="search-labels">
-            <input
-              className="search-labels-input"
-              type="text"
-              onChange={onSearchChange}
-              value={searchString}
-              placeholder="Search"
-              autoFocus={true}
-            />
-            <input
-              className="search-labels-button"
-              type="submit"
-              value="Search"
-              onClick={onSearchSubmit}
-            />
-          </div>
+        <div className="">
+          <form action="#">
+            <div className="search-labels">
+              <input
+                className="search-labels-input"
+                type="text"
+                onChange={onSearchChange}
+                value={searchString}
+                placeholder="Search"
+                autoFocus={true}
+              />
+              <input
+                className="search-labels-button"
+                type="submit"
+                value="Search"
+                onClick={onSearchSubmit}
+              />
+            </div>
 
-          <ul className="result-live-list">
-            {renderLiveItems}
-            <li className={errorSearch ? "search-error-box" : "dn"}>
-              No books were found for <b>"{searchString}"</b>
-            </li>
-          </ul>
+            <ul className="result-live-list">
+              {renderLiveItems}
+              <li className={errorSearch ? "search-error-box" : "dn"}>
+                No books were found for <b>"{searchString}"</b>
+              </li>
+            </ul>
 
-          <button className={statusSearch ? "" : "dn"} onClick={getNextBooks}>
-            Next 5 Books
-          </button>
-        </form>
-        <div className="result">{renderItems}</div>
+            <button
+              className={statusSearch ? "result-next" : "dn"}
+              onClick={getNextBooks}
+            >
+              Next 5 Books
+            </button>
+          </form>
+          <div className="result">{renderItems}</div>
+        </div>
       </div>
     </div>
   );
