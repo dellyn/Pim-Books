@@ -2,6 +2,8 @@ const apiBase: string = "https://www.googleapis.com/books/v1/volumes?q=";
 const apiKey: string = "AIzaSyCk0s2_fiQKK0hX5PB6pYk8srDqOO6-3Ds";
 
 const getResource = async (url: string) => {
+  console.log(url);
+
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Could not fetch ${url} +, reсived ${res.status}`);
@@ -37,8 +39,10 @@ export const getLiveBooksData = async (searchString: string) => {
 };
 
 const transformLiveData = (book: any) => {
+  const { volumeInfo } = book;
   return {
-    title: book.volumeInfo.title,
+    title: volumeInfo.title,
+    previewLink: (volumeInfo && volumeInfo.previewLink) || "/",
   };
 };
 
@@ -51,5 +55,6 @@ const transformSearchBooksData = (book: any) => {
     authors: volumeInfo.authors || [""],
     textSnippet: searchInfo && searchInfo.textSnippet,
     imageLinks: (imageLinks && imageLinks.thumbnail) || "/",
+    previewLink: volumeInfo.previewLink,
   };
 };

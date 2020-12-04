@@ -8,6 +8,7 @@ interface Book {
   readonly authors: string[];
   readonly textSnippet: string;
   readonly imageLinks: string;
+  readonly previewLink: string;
 }
 
 const SearchPanel = () => {
@@ -18,6 +19,7 @@ const SearchPanel = () => {
   const [startIndex, setStartIndex] = useState<number>(0);
   const [statusSearch, setStatusSearch] = useState<boolean>(false);
   const [errorSearch, setErrorSearch] = useState<boolean>(false);
+  const [intervalRequest, setIntervalRequest] = useState<any>();
 
   const updateData = (
     getData: any,
@@ -38,25 +40,32 @@ const SearchPanel = () => {
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const searchString: string = e.target.value;
-    setSearchString(searchString);
     setErrorSearch(false);
+    setSearchString(searchString);
   };
 
   useEffect(() => {
     const enterInterval = setTimeout(() => {
       if (searchString) {
-        updateData(getLiveBooksData, setBooksLiveResult, 0, false);
+        updateData(getLiveBooksData, setBooksLiveResult);
       } else {
         setBooksLiveResult([]);
       }
     }, 500);
+    setIntervalRequest(enterInterval);
+
     return () => {
       clearTimeout(enterInterval);
     };
   }, [searchString]);
 
   const onSearchSubmit = (): void => {
-    searchString && updateData(getBooksData, setBooksResult);
+    if (searchString) {
+      updateData(getBooksData, setBooksResult, 0, false);
+      setBooksLiveResult([]);
+
+      clearTimeout(intervalRequest);
+    }
   };
 
   const getNextBooks = (): void => {
@@ -65,38 +74,56 @@ const SearchPanel = () => {
     updateData(getBooksData, setBooksResult, newStartIndex);
   };
 
-  const renderItems = booksResult.map((book: Book, idx) => {
-    const imageLink = book.imageLinks;
-    let title = book.title;
-
-    if (title.length > 20) {
+  const configTitle = (title: string, max: number) => {
+    if (title.length > max) {
       let lenCounter: number = 0;
       let newTitle: string = "";
 
       title.split(" ").forEach((word: string) => {
         lenCounter += word.length;
-        if (lenCounter <= 20) {
+        if (lenCounter <= max) {
           newTitle += " " + word;
           return newTitle;
         }
       });
-      title = newTitle + "..";
+      return newTitle + "..";
     }
+    return title;
+  };
+  const renderItems = booksResult.map((book: Book, idx) => {
+    const imageLink = book.imageLinks;
+    const title = configTitle(book.title, 20);
+    const link = book.previewLink;
 
     return (
       <div className="result-book" key={idx}>
-        <img src={imageLink} alt="" />
-        <p>{title}</p>
+        <a href={link}>
+          <img src={imageLink} title={book.title} />
+          <p>{title}</p>
+        </a>
       </div>
     );
   });
 
-  const renderLiveItems = booksLiveResult.map((book: Book, idx) => (
-    <li key={idx}>{book.title}</li>
-  ));
+  const renderLiveItems = booksLiveResult.map((book: Book, idx) => {
+    const title = configTitle(book.title, 50);
+    const link = book.previewLink;
+
+    return (
+      <li key={idx}>
+        <a href={link}>{title}</a>
+      </li>
+    );
+  });
 
   return (
-    <div className="search">
+    <div
+      className={
+        booksLiveResult.length !== 0 || errorSearch
+          ? "search search-live"
+          : "search"
+      }
+    >
       <div className="container">
         <div className="">
           <form action="#">
@@ -118,14 +145,18 @@ const SearchPanel = () => {
             </div>
 
             <ul className="result-live-list">
-              {renderLiveItems}
-              <li className={errorSearch ? "search-error-box" : "dn"}>
+              {statusSearch && renderLiveItems}
+              <li
+                className={
+                  errorSearch && searchString ? "search-error-box" : "dn"
+                }
+              >
                 No books were found for <b>"{searchString}"</b>
               </li>
             </ul>
 
             <button
-              className={statusSearch ? "result-next" : "dn"}
+              className={statusSearch ? "dn" : "dn"}
               onClick={getNextBooks}
             >
               Next 5 Books
