@@ -15,11 +15,12 @@ const SearchPanel = () => {
   const [searchString, setSearchString] = useState<string>("");
   const [booksResult, setBooksResult] = useState<Book[]>([]);
   const [booksLiveResult, setBooksLiveResult] = useState<Book[]>([]);
-  const [maxResults] = useState<number>(10);
+  const [maxResults] = useState<number>(36);
   const [startIndex, setStartIndex] = useState<number>(0);
   const [statusSearch, setStatusSearch] = useState<boolean>(false);
   const [errorSearch, setErrorSearch] = useState<boolean>(false);
   const [intervalRequest, setIntervalRequest] = useState<any>();
+  const [activeSearchString, setActiveSearchString] = useState<string>("");
 
   const updateData = (
     getData: any,
@@ -34,6 +35,7 @@ const SearchPanel = () => {
       })
       .catch(() => {
         setErrorSearch(true);
+        // setBooksResult([]);
         setBooksLiveResult([]);
       });
   };
@@ -59,11 +61,14 @@ const SearchPanel = () => {
     };
   }, [searchString]);
 
+  useEffect(() => {
+    setActiveSearchString(searchString);
+  }, [booksResult ]);
+
   const onSearchSubmit = (): void => {
     if (searchString) {
       updateData(getBooksData, setBooksResult, 0, false);
       setBooksLiveResult([]);
-
       clearTimeout(intervalRequest);
     }
   };
@@ -96,12 +101,12 @@ const SearchPanel = () => {
     const link = book.previewLink;
 
     return (
-      <div className="result-book" key={idx}>
+      <li className="result-book" key={idx}>
         <a href={link}>
-          <img src={imageLink} title={book.title} />
+          <img src={imageLink} title={book.title} alt={title} />
           <p>{title}</p>
         </a>
-      </div>
+      </li>
     );
   });
 
@@ -111,7 +116,9 @@ const SearchPanel = () => {
 
     return (
       <li key={idx}>
-        <a href={link}>{title}</a>
+        <a href={link} className="result-live-list-item">
+          {title}
+        </a>
       </li>
     );
   });
@@ -148,12 +155,21 @@ const SearchPanel = () => {
               {statusSearch && renderLiveItems}
               <li
                 className={
-                  errorSearch && searchString ? "search-error-box" : "dn"
+                  errorSearch && searchString
+                    ? "result-live-list-item results-not-found"
+                    : "dn"
                 }
               >
                 No books were found for <b>"{searchString}"</b>
               </li>
             </ul>
+            <p className="search-status">
+              {booksResult.length !== 0 && !errorSearch
+                ? `Query result: '${activeSearchString}'`
+                : errorSearch && booksResult.length !== 0
+                ? "Nothing to found"
+                : ""}
+            </p>
 
             <button
               className={statusSearch ? "dn" : "dn"}
@@ -162,7 +178,8 @@ const SearchPanel = () => {
               Next 5 Books
             </button>
           </form>
-          <div className="result">{renderItems}</div>
+
+          <ul className="result">{renderItems}</ul>
         </div>
       </div>
     </div>
