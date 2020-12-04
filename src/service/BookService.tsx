@@ -29,7 +29,7 @@ export const getLiveBooksData = async (searchString: string) => {
   const url = configUrl(
     apiBase,
     searchString,
-    `&startIndex=0&maxResults=10&`,
+    `&startIndex=0&maxResults=7&`,
     apiKey
   );
   const res = await getResource(url);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   getSearchBooksData,
   getLiveBooksData,
@@ -21,39 +21,53 @@ const SearchPanel = () => {
   const [maxResults] = useState<number>(30);
   const [startIndex, setStartIndex] = useState<number>(0);
   const [statusSearch, setStatusSearch] = useState<boolean>(false);
-
+  const [errorSearch, setErrorSearch] = useState<boolean>(false);
   const getNextBooks = (): void => {
     const newStartIndex = startIndex + 5;
     setStartIndex(newStartIndex);
-    updateData(newStartIndex);
+    updateData(getSearchBooksData, setBooksResult, newStartIndex);
   };
 
-  const updateData = (index: number = startIndex): void => {
-    getSearchBooksData(searchString, maxResults, index)
+  const updateData = (
+    getData: any,
+    setData: any,
+    index: number = 0,
+    statusSearch = true
+  ): void => {
+    getData(searchString, maxResults, index)
       .then((bookArray: Book[]) => {
-        setBooksResult(bookArray);
-        setStatusSearch(true);
+        setData(bookArray);
+        setStatusSearch(statusSearch);
       })
       .catch(() => {
-        throw new Error("search error");
+        setErrorSearch(true);
+        setBooksLiveResult([]);
       });
   };
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const searchString: string = e.target.value;
     setSearchString(searchString);
-    getLiveBooksData(searchString)
-      .then((bookArray: Book[]) => {
-        setBooksLiveResult(bookArray);
-        setStatusSearch(true);
-      })
-      .catch(() => {
-        throw new Error("search error");
-      });
+    setErrorSearch(false);
+
+    console.log(!booksLiveResult);
   };
 
-  const onSearchSubmit = () => {
-    searchString && updateData();
+  useEffect(() => {
+    const enterInterval = setTimeout(() => {
+      if (searchString) {
+        updateData(getLiveBooksData, setBooksLiveResult, 0, false);
+      } else {
+        setBooksLiveResult([]);
+      }
+    }, 500);
+    return () => {
+      clearTimeout(enterInterval);
+    };
+  }, [searchString]);
+
+  const onSearchSubmit = (): void => {
+    searchString && updateData(getSearchBooksData, setBooksResult);
   };
 
   const renderItems = booksResult.map((book: Book, idx) => {
@@ -80,6 +94,7 @@ const SearchPanel = () => {
       </div>
     );
   });
+
   const renderLiveItems = booksLiveResult.map((book: Book, idx) => (
     <li key={idx}>{book.title}</li>
   ));
@@ -104,11 +119,18 @@ const SearchPanel = () => {
               onClick={onSearchSubmit}
             />
           </div>
+
+          <ul className="result-live-list">
+            {renderLiveItems}
+            <li className={errorSearch ? "search-error-box" : "dn"}>
+              No books were found for <b>"{searchString}"</b>
+            </li>
+          </ul>
+
           <button className={statusSearch ? "" : "dn"} onClick={getNextBooks}>
             Next 5 Books
           </button>
         </form>
-        <ul className="result-live-list">{renderLiveItems}</ul>
         <div className="result">{renderItems}</div>
       </div>
     </div>
