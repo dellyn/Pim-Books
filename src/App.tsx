@@ -6,6 +6,9 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <div className="container">
+        <h1 className="logo">
+          Pim<span>Book</span>
+        </h1>
         <SearchPanel />
       </div>
     </div>

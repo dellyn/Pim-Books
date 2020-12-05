@@ -67,7 +67,7 @@ const SearchPanel = () => {
   }, [booksResult]);
 
   const onSearchSubmit = (): void => {
-    if (searchString) {
+    if (searchString && searchString !== activeSearchString) {
       updateData(getBooksData, setBooksResult, 0, false);
       setBooksLiveResult([]);
       clearTimeout(intervalRequest);
@@ -171,7 +171,14 @@ const SearchPanel = () => {
               : ""}
           </p>
 
-          <button className={statusSearch ? "dn" : "dn"} onClick={getNextBooks}>
+          <button
+            className={
+              booksResult.length !== 0
+                ? "search-next-book"
+                : " search-next-book dn"
+            }
+            onClick={getNextBooks}
+          >
             Next 5 Books
           </button>
         </form>
