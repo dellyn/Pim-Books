@@ -25,3 +25,13 @@ ul,
 li {
   list-style-type: none;
 }
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: block;
+}
+@media screen and (max-width: 700px) {
+  .container {
+    width: 90%;
+  }
+}

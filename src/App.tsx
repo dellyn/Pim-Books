@@ -5,7 +5,9 @@ import SearchPanel from "./components/SearchPanel";
 const App: React.FC = () => {
   return (
     <div className="App">
-      <SearchPanel />
+      <div className="container">
+        <SearchPanel />
+      </div>
     </div>
   );
 };

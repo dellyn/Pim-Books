@@ -1,10 +1,8 @@
 $border: rgb(227, 237, 238);
 
 .search {
-  display: flex;
   margin: 20px 0px;
-  .container {
-    width: 100%;
+  .d-flex {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -112,6 +110,7 @@ $border: rgb(227, 237, 238);
         height: 180px;
       }
       p {
+        word-wrap: break-word;
         margin: 15px 5px 10px 5px;
       }
     }
@@ -132,3 +131,21 @@ $border: rgb(227, 237, 238);
 .dn {
   display: none !important;
 }
+
+@media screen and (max-width: 500px) {
+  .search {
+    .result {
+      &-book {
+        margin: 7px 7px;
+        width: 110px;
+        p {
+          font-size: 13px;
+          margin: 10px 5px 5px 5px;
+        }
+        img {
+          height: 140px;
+        }
+      }
+    }
+  }
+} ;

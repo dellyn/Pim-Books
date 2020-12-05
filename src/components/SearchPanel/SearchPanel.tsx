@@ -11,6 +11,7 @@ interface Book {
   readonly previewLink: string;
 }
 
+// добавить число всех книг по запросу
 const SearchPanel = () => {
   const [searchString, setSearchString] = useState<string>("");
   const [booksResult, setBooksResult] = useState<Book[]>([]);
@@ -63,7 +64,7 @@ const SearchPanel = () => {
 
   useEffect(() => {
     setActiveSearchString(searchString);
-  }, [booksResult ]);
+  }, [booksResult]);
 
   const onSearchSubmit = (): void => {
     if (searchString) {
@@ -131,56 +132,51 @@ const SearchPanel = () => {
           : "search"
       }
     >
-      <div className="container">
-        <div className="">
-          <form action="#">
-            <div className="search-labels">
-              <input
-                className="search-labels-input"
-                type="text"
-                onChange={onSearchChange}
-                value={searchString}
-                placeholder="Search"
-                autoFocus={true}
-              />
-              <input
-                className="search-labels-button"
-                type="submit"
-                value="Search"
-                onClick={onSearchSubmit}
-              />
-            </div>
+      <div className="">
+        <form action="#">
+          <div className="search-labels">
+            <input
+              className="search-labels-input"
+              type="text"
+              onChange={onSearchChange}
+              value={searchString}
+              placeholder="Search"
+              autoFocus={true}
+            />
+            <input
+              className="search-labels-button"
+              type="submit"
+              value="Search"
+              onClick={onSearchSubmit}
+            />
+          </div>
 
-            <ul className="result-live-list">
-              {statusSearch && renderLiveItems}
-              <li
-                className={
-                  errorSearch && searchString
-                    ? "result-live-list-item results-not-found"
-                    : "dn"
-                }
-              >
-                No books were found for <b>"{searchString}"</b>
-              </li>
-            </ul>
-            <p className="search-status">
-              {booksResult.length !== 0 && !errorSearch
-                ? `Query result: '${activeSearchString}'`
-                : errorSearch && booksResult.length !== 0
-                ? "Nothing to found"
-                : ""}
-            </p>
-
-            <button
-              className={statusSearch ? "dn" : "dn"}
-              onClick={getNextBooks}
+          <ul className="result-live-list">
+            {statusSearch && renderLiveItems}
+            <li
+              className={
+                errorSearch && searchString
+                  ? "result-live-list-item results-not-found"
+                  : "dn"
+              }
             >
-              Next 5 Books
-            </button>
-          </form>
+              No books were found for <b>"{searchString}"</b>
+            </li>
+          </ul>
+          <p className="search-status">
+            {booksResult.length !== 0 && !errorSearch
+              ? `Query result: '${activeSearchString}'`
+              : errorSearch && booksResult.length !== 0
+              ? "Nothing to found"
+              : ""}
+          </p>
 
-          <ul className="result">{renderItems}</ul>
-        </div>
+          <button className={statusSearch ? "dn" : "dn"} onClick={getNextBooks}>
+            Next 5 Books
+          </button>
+        </form>
+
+        <ul className="result">{renderItems}</ul>
       </div>
     </div>
   );
