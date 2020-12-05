@@ -4,7 +4,7 @@ const apiKey: string = "AIzaSyCk0s2_fiQKK0hX5PB6pYk8srDqOO6-3Ds";
 const getResource = async (url: string) => {
   const res = await fetch(url);
   if (!res.ok) {
-    throw new Error(`Could not fetch ${url} +, reсived ${res.status}`);
+    throw new Error(`Could not fetch ${url} +, reсeived ${res.status}`);
   }
   return await res.json();
 };
@@ -17,12 +17,12 @@ export const getBooksData = async (
   maxResults: number
 ) => {
   const params: string = `&startIndex=0&maxResults=${maxResults}&`;
-
   const url: string = configUrl(apiBase, searchString, params, apiKey);
 
   const res = await getResource(url);
   return res.items.map(transformSearchBooksData);
 };
+
 export const getLiveBooksData = async (searchString: string) => {
   const url = configUrl(
     apiBase,
@@ -30,8 +30,8 @@ export const getLiveBooksData = async (searchString: string) => {
     `&startIndex=0&maxResults=7&`,
     apiKey
   );
-  const res = await getResource(url);
 
+  const res = await getResource(url);
   return res.items.map(transformLiveData);
 };
 
@@ -44,14 +44,12 @@ const transformLiveData = (book: any) => {
 };
 
 const transformSearchBooksData = (book: any) => {
-  const { searchInfo, selfLink, volumeInfo } = book;
+  const { volumeInfo } = book;
   const { imageLinks, title } = volumeInfo;
   return {
     title: title,
-    selfLink: selfLink,
-    authors: volumeInfo.authors || [""],
-    textSnippet: searchInfo && searchInfo.textSnippet,
-    imageLinks: (imageLinks && imageLinks.thumbnail) || "/",
     previewLink: volumeInfo.previewLink,
+    // authors: volumeInfo.authors || [""],
+    imageLinks: (imageLinks && imageLinks.thumbnail) || "/",
   };
 };
