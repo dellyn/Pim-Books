@@ -14,17 +14,15 @@ const configUrl = (...arg: string[]) =>
 
 export const getBooksData = async (
   searchString: string,
-  maxResults: number,
-  startIndex: number
+  maxResults: number
 ) => {
-  const params: string = `&startIndex=${startIndex}&maxResults=${maxResults}&`;
+  const params: string = `&startIndex=0&maxResults=${maxResults}&`;
 
   const url: string = configUrl(apiBase, searchString, params, apiKey);
 
   const res = await getResource(url);
-    return res.items.map(transformSearchBooksData);
+  return res.items.map(transformSearchBooksData);
 };
-
 export const getLiveBooksData = async (searchString: string) => {
   const url = configUrl(
     apiBase,

@@ -13,53 +13,72 @@ interface Book {
 
 // добавить число всех книг по запросу
 const SearchPanel = () => {
-  const [searchString, setSearchString] = useState<string>("");
+  const [moreBoksStep] = useState<number>(10);
+  const [loading, setLoading] = useState<boolean>(false);
   const [booksResult, setBooksResult] = useState<Book[]>([]);
-  const [booksLiveResult, setBooksLiveResult] = useState<Book[]>([]);
-  const [maxResults] = useState<number>(36);
-  const [startIndex, setStartIndex] = useState<number>(0);
-  const [statusSearch, setStatusSearch] = useState<boolean>(false);
-  const [errorSearch, setErrorSearch] = useState<boolean>(false);
+  const [searchString, setSearchString] = useState<string>("");
   const [intervalRequest, setIntervalRequest] = useState<any>();
+  const [errorSearch, setErrorSearch] = useState<boolean>(false);
+  const [statusSearch, setStatusSearch] = useState<boolean>(false);
+  const [maxResults, setMaxResults] = useState<number>(moreBoksStep);
+  const [booksLiveResult, setBooksLiveResult] = useState<Book[]>([]);
   const [activeSearchString, setActiveSearchString] = useState<string>("");
 
   const updateData = (
     getData: any,
     setData: any,
-    index: number = 0,
+    newMaxResults: number = maxResults,
     statusSearch = true
   ): void => {
-    getData(searchString, maxResults, index)
+    getData(searchString, newMaxResults)
       .then((bookArray: Book[]) => {
+        setLoading(false);
         setData(bookArray);
         setStatusSearch(statusSearch);
+        setErrorSearch(false);
       })
       .catch(() => {
+        setLoading(false);
         setErrorSearch(true);
-        // setBooksResult([]);
+        setStatusSearch(true);
         setBooksLiveResult([]);
+        console.log("catch");
       });
   };
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const searchString: string = e.target.value;
-    setErrorSearch(false);
     setSearchString(searchString);
   };
 
-  useEffect(() => {
-    const enterInterval = setTimeout(() => {
-      if (searchString) {
-        updateData(getLiveBooksData, setBooksLiveResult);
-      } else {
-        setBooksLiveResult([]);
-      }
-    }, 500);
-    setIntervalRequest(enterInterval);
+  // useEffect(() => {
+  //   const enterInterval = setTimeout(() => {
+  //     if (searchString) {
+  //       updateData(getLiveBooksData, setBooksLiveResult);
+  //     } else {
+  //       setStatusSearch(false);
+  //       setBooksLiveResult([]);
+  //     }
+  //   }, 500);
+  //   setIntervalRequest(enterInterval);
 
-    return () => {
-      clearTimeout(enterInterval);
-    };
+  //   return () => {
+  //     clearTimeout(enterInterval);
+  //   };
+  // }, [searchString]);
+  useEffect(() => {
+    if (searchString) {
+      const enterInterval = setTimeout(() => {
+        updateData(getLiveBooksData, setBooksLiveResult);
+      }, 500);
+      setIntervalRequest(enterInterval);
+
+      return () => {
+        clearTimeout(enterInterval);
+      };
+    } else {
+      setBooksLiveResult([]);
+    }
   }, [searchString]);
 
   useEffect(() => {
@@ -67,17 +86,20 @@ const SearchPanel = () => {
   }, [booksResult]);
 
   const onSearchSubmit = (): void => {
-    if (searchString && searchString !== activeSearchString) {
-      updateData(getBooksData, setBooksResult, 0, false);
+    if (searchString && searchString !== activeSearchString && !errorSearch) {
+      updateData(getBooksData, setBooksResult, maxResults, false);
+      setLoading(true);
       setBooksLiveResult([]);
       clearTimeout(intervalRequest);
     }
   };
 
-  const getNextBooks = (): void => {
-    const newStartIndex = startIndex + 5;
-    setStartIndex(newStartIndex);
-    updateData(getBooksData, setBooksResult, newStartIndex);
+  const getMoreBooks = (): void => {
+    if (maxResults >= 10 && maxResults <= 30) {
+      const newMaxResults = maxResults + moreBoksStep;
+      setMaxResults(newMaxResults);
+      updateData(getBooksData, setBooksResult, newMaxResults);
+    } else setMaxResults(40);
   };
 
   const configTitle = (title: string, max: number) => {
@@ -127,8 +149,9 @@ const SearchPanel = () => {
   return (
     <div
       className={
-        booksLiveResult.length !== 0 || errorSearch
-          ? "search search-live"
+        (statusSearch && booksLiveResult.length !== 0) ||
+        (searchString && errorSearch)
+          ? "search-live search"
           : "search"
       }
     >
@@ -155,7 +178,9 @@ const SearchPanel = () => {
             {statusSearch && renderLiveItems}
             <li
               className={
-                errorSearch && searchString
+                searchString &&
+                errorSearch &&
+                searchString !== activeSearchString
                   ? "result-live-list-item results-not-found"
                   : "dn"
               }
@@ -164,26 +189,28 @@ const SearchPanel = () => {
             </li>
           </ul>
           <p className="search-status">
-            {booksResult.length !== 0 && !errorSearch
+            {booksResult.length !== 0
               ? `Query result: '${activeSearchString}'`
               : errorSearch && booksResult.length !== 0
               ? "Nothing to found"
               : ""}
           </p>
-
-          <button
-            className={
-              booksResult.length !== 0
-                ? "search-next-book"
-                : " search-next-book dn"
-            }
-            onClick={getNextBooks}
-          >
-            Next 5 Books
-          </button>
         </form>
 
-        <ul className="result">{renderItems}</ul>
+        <ul className="result">{!loading ? renderItems : "Loading..."}</ul>
+        <button
+          className={
+            activeSearchString &&
+            maxResults < 40 &&
+            booksResult.length === maxResults &&
+            !loading
+              ? "search-next-book"
+              : "search-next-book dn"
+          }
+          onClick={getMoreBooks}
+        >
+          Show more books
+        </button>
       </div>
     </div>
   );

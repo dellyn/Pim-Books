@@ -58,18 +58,17 @@ $border: rgb(227, 237, 238);
       font-size: 13px;
       color: rgb(233, 233, 233);
     }
-    .search-next-book {
-      position: absolute;
-      right: 0;
-      background-color: #a9e6f5;
-      padding: 5px 10px;
-      box-sizing: border-box;
-      border: none;
-      outline: none;
-      margin-top: 12px;
-      border-radius: 8px;
-      font-size: 13px;
-    }
+  }
+  .search-next-book {
+    background-color: #a9e6f5;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    border-radius: 8px;
+    font-size: 13px;
+    margin: 20px auto;
+    display: block;
   }
   .result-live-list {
     position: absolute;
@@ -100,7 +99,7 @@ $border: rgb(227, 237, 238);
     flex-wrap: wrap;
     justify-content: center;
     &-book {
-      margin: 7px 7px;
+      margin: 7px 5px;
       width: 140px;
       background-color: #fff;
       border-radius: 3px;
