@@ -83,9 +83,10 @@ $lightBlue: rgb(204, 237, 243);
     }
   }
   .more-books {
-    margin: 20px 0px 30px 0px;
+    margin: 30px 0px 20px 0px;
     display: flex;
     justify-content: center;
+
     &-btn {
       background-color: $lightBlue;
       padding: 5px 10px;
@@ -99,7 +100,7 @@ $lightBlue: rgb(204, 237, 243);
     }
     .preloader {
       transform: scale(0.4);
-      margin-top: -55px;
+      margin-top: -70px;
     }
   }
 
@@ -137,6 +138,10 @@ $lightBlue: rgb(204, 237, 243);
         margin: 15px 5px 10px 5px;
       }
     }
+    .preloader {
+      margin-top: 50px;
+      transform: scale(0.7);
+    }
   }
 
   &-live {
@@ -156,20 +161,20 @@ $lightBlue: rgb(204, 237, 243);
   display: none !important;
 }
 
-// @media screen and (max-width: 500px) {
-//   .search {
-//     .result {
-//       &-book {
-//         margin: 7px 7px;
-//         width: 110px;
-//         p {
-//           font-size: 13px;
-//           margin: 10px 5px 5px 5px;
-//         }
-//         img {
-//           height: 140px;
-//         }
-//       }
-//     }
-//   }
-// } ;
+@media screen and (max-width: 500px) {
+  .search {
+    .result {
+      &-book {
+        margin: 7px 7px;
+        width: 110px;
+        p {
+          font-size: 13px;
+          margin: 10px 5px 5px 5px;
+        }
+        img {
+          height: 140px;
+        }
+      }
+    }
+  }
+} ;
