@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getBooksData, getLiveBooksData } from "../../service/BookService";
+import Preloader from "../Preloader/Preloader";
 import "./SearchPanel.scss";
 
 interface Book {
@@ -161,8 +162,7 @@ const SearchPanel = () => {
           Show more books
         </button>
       );
-    } else if (moreBookPending)
-      return <p className="more-books-loading">Loading...</p>;
+    } else if (moreBookPending) return <Preloader />;
     return null;
   };
 
@@ -209,7 +209,7 @@ const SearchPanel = () => {
         </p>
       </form>
 
-      <ul className="result">{!loading ? renderItems : "Searching..."}</ul>
+      <ul className="result">{!loading ? renderItems : <Preloader />}</ul>
       <div className="more-books">
         <MoreBooksElem />
       </div>
