@@ -1,5 +1,6 @@
+$bgDarkMint: rgb(0, 86, 98);
 body {
-  background-color: rgb(5, 83, 94);
+  background-color: $bgDarkMint;
   color: #fff;
   font-family: "Open Sans";
   font-size: 15px;
@@ -40,7 +41,7 @@ li {
 }
 @media screen and (max-width: 700px) {
   .container {
-    width: 90%;
+    width: 95%;
   }
   .logo {
     font-size: 55px;

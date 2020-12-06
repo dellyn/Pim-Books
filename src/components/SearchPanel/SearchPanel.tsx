@@ -4,11 +4,9 @@ import "./SearchPanel.scss";
 
 interface Book {
   readonly title: string;
-  readonly selfLink: string;
-  readonly authors: string[];
-  readonly textSnippet: string;
+  // readonly authors: string[];
   readonly imageLinks: string;
-  readonly previewLink: string;
+  readonly infoLink: string;
 }
 
 const SearchPanel = () => {
@@ -21,6 +19,7 @@ const SearchPanel = () => {
   const [statusSearch, setStatusSearch] = useState<boolean>(false);
   const [maxResults, setMaxResults] = useState<number>(moreBoksStep);
   const [booksLiveResult, setBooksLiveResult] = useState<Book[]>([]);
+  const [moreBookPending, setMoreBookPending] = useState<boolean>(false);
   const [activeSearchString, setActiveSearchString] = useState<string>("");
 
   const updateData = (
@@ -29,24 +28,30 @@ const SearchPanel = () => {
     newMaxResults: number = maxResults,
     statusSearch = true
   ): void => {
-    getData(searchString, newMaxResults)
+    const newSearchString = searchString.trim();
+    console.log(searchString, searchString.length);
+    console.log(newSearchString, newSearchString.length);
+
+    getData(newSearchString, newMaxResults)
       .then((bookArray: Book[]) => {
         setLoading(false);
         setData(bookArray);
         setErrorSearch(false);
+        setMoreBookPending(false);
         setStatusSearch(statusSearch);
       })
       .catch(() => {
         setLoading(false);
         setErrorSearch(true);
         setStatusSearch(true);
+        setMoreBookPending(false);
         setBooksLiveResult([]);
       });
   };
 
   const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const searchString: string = e.target.value;
-    setSearchString(searchString);
+    const string: string = e.target.value;
+    setSearchString(string);
   };
 
   useEffect(() => {
@@ -64,13 +69,16 @@ const SearchPanel = () => {
     } else {
       setBooksLiveResult([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchString]);
 
   useEffect(() => {
     setActiveSearchString(searchString);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [booksResult]);
 
-  const onSearchSubmit = (): void => {
+  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
     if (searchString && searchString !== activeSearchString && !errorSearch) {
       updateData(getBooksData, setBooksResult, maxResults, false);
       setLoading(true);
@@ -83,8 +91,9 @@ const SearchPanel = () => {
     if (maxResults >= 10 && maxResults <= 30) {
       const newMaxResults = maxResults + moreBoksStep;
       setMaxResults(newMaxResults);
+      setMoreBookPending(true);
       updateData(getBooksData, setBooksResult, newMaxResults);
-    } else setMaxResults(40);
+    }
   };
 
   const configTitle = (title: string, max: number) => {
@@ -106,7 +115,8 @@ const SearchPanel = () => {
   const renderItems = booksResult.map((book: Book, idx) => {
     const imageLink = book.imageLinks;
     const title = configTitle(book.title, 20);
-    const link = book.previewLink;
+
+    const link = book.infoLink;
 
     return (
       <li className="result-book" key={idx}>
@@ -119,80 +129,89 @@ const SearchPanel = () => {
   });
 
   const renderLiveItems = booksLiveResult.map((book: Book, idx) => {
-    const title = configTitle(book.title, 50);
-    const link = book.previewLink;
+    const title = configTitle(book.title, 40);
+    const link = book.infoLink;
 
     return (
       <li key={idx}>
-        <a href={link} className="result-live-list-item">
+        <a href={link} className="search-live-list-item">
+          <img
+            src="https://www.flaticon.com/svg/static/icons/svg/482/482631.svg"
+            alt="search"
+          />
           {title}
         </a>
       </li>
     );
   });
 
-  return (
-    <div
-      className={
-        (statusSearch && booksLiveResult.length !== 0) ||
-        (searchString && errorSearch)
-          ? "search-live search"
-          : "search"
-      }
-    >
-      <div className="wrapper">
-        <form action="#">
-          <div className="search-labels">
-            <input
-              className="search-labels-input"
-              type="text"
-              onChange={onSearchChange}
-              value={searchString}
-              placeholder="Search"
-              autoFocus={true}
-            />
-            <input
-              className="search-labels-button"
-              type="submit"
-              value="Search"
-              onClick={onSearchSubmit}
-            />
-          </div>
+  const booksLiveResultErrorLogic =
+    searchString && errorSearch && searchString !== activeSearchString;
 
-          <ul className="result-live-list">
-            {statusSearch && renderLiveItems}
-            {searchString &&
-              errorSearch &&
-              searchString !== activeSearchString && (
-                <li className="result-live-list-item results-not-found">
-                  No books were found for "<b>{searchString}</b>"
-                </li>
-              )}
-          </ul>
+  const searchClassLogic =
+    (statusSearch && booksLiveResult.length !== 0) ||
+    (searchString && errorSearch);
 
-          <p className="search-status">
-            {booksResult.length !== 0
-              ? `Query result: '${activeSearchString}'`
-              : errorSearch && booksResult.length !== 0
-              ? "Nothing to found"
-              : ""}
-          </p>
-        </form>
+  const MoreBooksElem = () => {
+    const len = booksResult.length;
 
-        <ul className="result">{!loading ? renderItems : "Searching..."}</ul>
-        <button
-          className={
-            activeSearchString &&
-            maxResults < 40 &&
-            booksResult.length === maxResults &&
-            !loading
-              ? "search-next-book"
-              : "search-next-book dn"
-          }
-          onClick={getMoreBooks}
-        >
+    if (!moreBookPending && len < 40 && !loading && len === maxResults) {
+      return (
+        <button onClick={getMoreBooks} className="more-books-btn">
           Show more books
         </button>
+      );
+    } else if (moreBookPending)
+      return <p className="more-books-loading">Loading...</p>;
+    return null;
+  };
+
+  const ResultNotFound = () => {
+    return (
+      <li className="search-live-list-item results-not-found">
+        <img
+          src="https://www.flaticon.com/svg/static/icons/svg/482/482631.svg"
+          alt="search"
+        />
+        No books were found for "<b>{searchString}</b>"
+      </li>
+    );
+  };
+
+  return (
+    <div className={searchClassLogic ? "search-live search" : "search"}>
+      <form action="#" onSubmit={onSearchSubmit}>
+        <div className="search-labels">
+          <input
+            className="search-labels-input"
+            type="text"
+            onChange={onSearchChange}
+            value={searchString}
+            placeholder="Search"
+            autoFocus={true}
+          />
+          <input
+            className="search-labels-button"
+            type="submit"
+            value="Search"
+          />
+        </div>
+
+        <ul className="search-live-list">
+          {statusSearch && renderLiveItems}
+          {booksLiveResultErrorLogic && <ResultNotFound />}
+        </ul>
+
+        <p className="search-status">
+          {booksResult.length !== 0
+            ? `Query result: '${activeSearchString}'`
+            : errorSearch && booksResult.length !== 0 && "Nothing to found"}
+        </p>
+      </form>
+
+      <ul className="result">{!loading ? renderItems : "Searching..."}</ul>
+      <div className="more-books">
+        <MoreBooksElem />
       </div>
     </div>
   );
