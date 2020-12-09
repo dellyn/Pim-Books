@@ -5,8 +5,7 @@ import "./SearchPanel.scss";
 
 interface Book {
   readonly title: string;
-  // readonly authors: string[];
-  readonly imageLinks: string;
+  readonly imageLink: string;
   readonly infoLink: string;
 }
 
@@ -20,7 +19,7 @@ const SearchPanel = () => {
   const [statusSearch, setStatusSearch] = useState<boolean>(false);
   const [maxResults, setMaxResults] = useState<number>(moreBoksStep);
   const [booksLiveResult, setBooksLiveResult] = useState<Book[]>([]);
-  const [moreBookPending, setMoreBookPending] = useState<boolean>(false);
+  const [moreBookLoading, setMoreBookLoading] = useState<boolean>(false);
   const [activeSearchString, setActiveSearchString] = useState<string>("");
 
   const updateData = (
@@ -29,23 +28,18 @@ const SearchPanel = () => {
     newMaxResults: number = maxResults,
     statusSearch = true
   ): void => {
-    const newSearchString = searchString.trim();
-    console.log(searchString, searchString.length);
-    console.log(newSearchString, newSearchString.length);
-
-    getData(newSearchString, newMaxResults)
+    getData(searchString, newMaxResults)
       .then((bookArray: Book[]) => {
         setLoading(false);
         setData(bookArray);
         setErrorSearch(false);
-        setMoreBookPending(false);
+        setMoreBookLoading(false);
         setStatusSearch(statusSearch);
       })
       .catch(() => {
         setLoading(false);
         setErrorSearch(true);
-        setStatusSearch(true);
-        setMoreBookPending(false);
+        setMoreBookLoading(false);
         setBooksLiveResult([]);
       });
   };
@@ -92,77 +86,70 @@ const SearchPanel = () => {
     if (maxResults >= 10 && maxResults <= 30) {
       const newMaxResults = maxResults + moreBoksStep;
       setMaxResults(newMaxResults);
-      setMoreBookPending(true);
+      setMoreBookLoading(true);
       updateData(getBooksData, setBooksResult, newMaxResults);
     }
   };
 
-  const configTitle = (title: string, max: number) => {
+  const configTitle = (title: string, max: number): string => {
     if (title.length > max) {
       let lenCounter: number = 0;
-      let newTitle: string = "";
-
-      title.split(" ").forEach((word: string) => {
-        lenCounter += word.length;
-        if (lenCounter <= max) {
-          newTitle += " " + word;
-          return newTitle;
-        }
-      });
-      return newTitle + "..";
+      const newTitle = title
+        .trim()
+        .split(" ")
+        .filter((word: string) => {
+          lenCounter += word.length;
+          return lenCounter <= max && " " + word;
+        });
+      return newTitle.join(" ") + "..";
     }
     return title;
   };
-  const renderItems = booksResult.map((book: Book, idx) => {
-    const imageLink = book.imageLinks;
-    const title = configTitle(book.title, 20);
 
-    const link = book.infoLink;
+  const renderItems = booksResult.map(
+    (book: Book, i): React.ReactNode => {
+      const { title, infoLink, imageLink } = book;
+      const configuredTitle: string = configTitle(title, 20);
 
-    return (
-      <li className="result-book" key={idx}>
-        <a href={link}>
-          <img src={imageLink} title={book.title} alt={title} />
-          <p>{title}</p>
-        </a>
-      </li>
-    );
-  });
+      return (
+        <li className="result-book" key={i}>
+          <a href={infoLink}>
+            <img src={imageLink} title={title} alt={title} />
+            <p>{configuredTitle}</p>
+          </a>
+        </li>
+      );
+    }
+  );
 
-  const renderLiveItems = booksLiveResult.map((book: Book, idx) => {
-    const title = configTitle(book.title, 40);
-    const link = book.infoLink;
+  const renderLiveItems = booksLiveResult.map(
+    (book: Book, i): React.ReactNode => {
+      const configuredTitle: string = configTitle(book.title, 40);
+      const { infoLink } = book;
+      const iconLink: string =
+        "https://www.flaticon.com/svg/static/icons/svg/482/482631.svg";
 
-    return (
-      <li key={idx}>
-        <a href={link} className="search-live-list-item">
-          <img
-            src="https://www.flaticon.com/svg/static/icons/svg/482/482631.svg"
-            alt="search"
-          />
-          {title}
-        </a>
-      </li>
-    );
-  });
-
-  const booksLiveResultErrorLogic =
-    searchString && errorSearch && searchString !== activeSearchString;
-
-  const searchClassLogic =
-    (statusSearch && booksLiveResult.length !== 0) ||
-    (searchString && errorSearch);
+      return (
+        <li key={i}>
+          <a href={infoLink} className="search-live-list-item">
+            <img src={iconLink} alt="icon" />
+            {configuredTitle}
+          </a>
+        </li>
+      );
+    }
+  );
 
   const MoreBooksElem = () => {
     const len = booksResult.length;
 
-    if (!moreBookPending && len < 40 && !loading && len === maxResults) {
+    if (!moreBookLoading && len < 40 && !loading && len === maxResults) {
       return (
         <button onClick={getMoreBooks} className="more-books-btn">
           Show more books
         </button>
       );
-    } else if (moreBookPending) return <Preloader />;
+    } else if (moreBookLoading) return <Preloader />;
     return null;
   };
 
@@ -177,6 +164,11 @@ const SearchPanel = () => {
       </li>
     );
   };
+
+  const booksLiveResultErrorLogic = errorSearch && searchString;
+
+  const searchClassLogic =
+    booksLiveResult.length !== 0 || (errorSearch && searchString);
 
   return (
     <div className={searchClassLogic ? "search-live search" : "search"}>
@@ -198,14 +190,11 @@ const SearchPanel = () => {
         </div>
 
         <ul className="search-live-list">
-          {statusSearch && renderLiveItems}
-          {booksLiveResultErrorLogic && <ResultNotFound />}
+          {!booksLiveResultErrorLogic ? renderLiveItems : <ResultNotFound />}
         </ul>
 
         <p className="search-status">
-          {booksResult.length !== 0
-            ? `Query result: '${activeSearchString}'`
-            : errorSearch && booksResult.length !== 0 && "Nothing to found"}
+          {booksResult.length !== 0 && `Query result: '${activeSearchString}'`}
         </p>
       </form>
 
