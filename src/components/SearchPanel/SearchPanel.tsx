@@ -16,7 +16,6 @@ const SearchPanel = () => {
   const [searchString, setSearchString] = useState<string>("");
   const [intervalRequest, setIntervalRequest] = useState<any>();
   const [errorSearch, setErrorSearch] = useState<boolean>(false);
-  const [statusSearch, setStatusSearch] = useState<boolean>(false);
   const [maxResults, setMaxResults] = useState<number>(moreBoksStep);
   const [booksLiveResult, setBooksLiveResult] = useState<Book[]>([]);
   const [moreBookLoading, setMoreBookLoading] = useState<boolean>(false);
@@ -25,8 +24,7 @@ const SearchPanel = () => {
   const updateData = (
     getData: any,
     setData: any,
-    newMaxResults: number = maxResults,
-    statusSearch = true
+    newMaxResults: number = maxResults
   ): void => {
     getData(searchString, newMaxResults)
       .then((bookArray: Book[]) => {
@@ -34,7 +32,6 @@ const SearchPanel = () => {
         setData(bookArray);
         setErrorSearch(false);
         setMoreBookLoading(false);
-        setStatusSearch(statusSearch);
       })
       .catch(() => {
         setLoading(false);
@@ -75,7 +72,7 @@ const SearchPanel = () => {
   const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     if (searchString && searchString !== activeSearchString && !errorSearch) {
-      updateData(getBooksData, setBooksResult, maxResults, false);
+      updateData(getBooksData, setBooksResult, maxResults);
       setLoading(true);
       setBooksLiveResult([]);
       clearTimeout(intervalRequest);
@@ -83,7 +80,7 @@ const SearchPanel = () => {
   };
 
   const getMoreBooks = (): void => {
-    if (maxResults >= 10 && maxResults <= 30) {
+    if (maxResults >= moreBoksStep && maxResults <= 30) {
       const newMaxResults = maxResults + moreBoksStep;
       setMaxResults(newMaxResults);
       setMoreBookLoading(true);
@@ -112,7 +109,7 @@ const SearchPanel = () => {
       const configuredTitle: string = configTitle(title, 20);
 
       return (
-        <li className="result-book" key={i}>
+        <li className="result-list-item" key={i}>
           <a href={infoLink}>
             <img src={imageLink} title={title} alt={title} />
             <p>{configuredTitle}</p>
@@ -165,14 +162,17 @@ const SearchPanel = () => {
     );
   };
 
-  const booksLiveResultErrorLogic = errorSearch && searchString;
-
-  const searchClassLogic =
-    booksLiveResult.length !== 0 || (errorSearch && searchString);
+  const liveResultErrLogic = errorSearch && searchString;
+  const formStyleLogic = booksLiveResult.length !== 0 || liveResultErrLogic;
 
   return (
-    <div className={searchClassLogic ? "search-live search" : "search"}>
-      <form action="#" onSubmit={onSearchSubmit}>
+    <div className="search">
+      <form
+        onSubmit={onSearchSubmit}
+        className={
+          formStyleLogic ? "search-form-live search-form" : "search-form"
+        }
+      >
         <div className="search-labels">
           <input
             className="search-labels-input"
@@ -190,7 +190,7 @@ const SearchPanel = () => {
         </div>
 
         <ul className="search-live-list">
-          {!booksLiveResultErrorLogic ? renderLiveItems : <ResultNotFound />}
+          {!liveResultErrLogic ? renderLiveItems : <ResultNotFound />}
         </ul>
 
         <p className="search-status">
@@ -198,9 +198,13 @@ const SearchPanel = () => {
         </p>
       </form>
 
-      <ul className="result">{!loading ? renderItems : <Preloader />}</ul>
-      <div className="more-books">
-        <MoreBooksElem />
+      <div className="result">
+        <ul className="result-list">
+          {!loading ? renderItems : <Preloader />}
+        </ul>
+        <div className="more-books">
+          <MoreBooksElem />
+        </div>
       </div>
     </div>
   );
