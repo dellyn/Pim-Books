@@ -10,6 +10,15 @@ const getResource = async (url: string) => {
   return await res.json();
 };
 
+export const getBookData = async (bookId: string) => {
+  const url: string = configUrl(apiBase, bookId, "&", apiKey);
+  const res = await getResource(url);
+
+  const book = res.items.find((item: any) => item.id === bookId);
+
+  return transformActiveBookData(book);
+};
+
 export const getBooksData = async (
   searchString: string,
   maxResults: number
@@ -32,19 +41,35 @@ export const getLiveBooksData = async (searchString: string) => {
 const configUrl = (...arg: string[]) => arg.reduce((a, c) => a + c);
 
 const transformLiveData = (book: any) => {
-  const { volumeInfo } = book;
+  const { volumeInfo, id } = book;
   return {
+    id: id,
     title: volumeInfo.title,
-    infoLink: (volumeInfo && volumeInfo.infoLink) || "/",
+    infoLink: (volumeInfo && volumeInfo.infoLink) || null,
   };
 };
 
 const transformSearchData = (book: any) => {
-  const { volumeInfo } = book;
+  const { volumeInfo, id } = book;
   const { imageLinks, title } = volumeInfo;
   return {
+    id: id,
     title: title,
-    infoLink: (volumeInfo && volumeInfo.infoLink) || "/",
+    infoLink: (volumeInfo && volumeInfo.infoLink) || null,
+    imageLink: (imageLinks && imageLinks.thumbnail) || bookPlaceholder,
+  };
+};
+
+const transformActiveBookData = (book: any) => {
+  const volumeInfo = book.volumeInfo || null;
+  const { imageLinks, title, categories, description, publisher } = volumeInfo;
+
+  return {
+    title: title,
+    publisher: publisher,
+    categories: categories || [],
+    description: description || null,
+    infoLink: (volumeInfo && volumeInfo.infoLink) || null,
     imageLink: (imageLinks && imageLinks.thumbnail) || bookPlaceholder,
   };
 };

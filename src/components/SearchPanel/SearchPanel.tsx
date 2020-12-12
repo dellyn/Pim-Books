@@ -4,12 +4,12 @@ import Preloader from "../Preloader/Preloader";
 import "./SearchPanel.scss";
 
 interface Book {
+  readonly id: number | string;
   readonly title: string;
   readonly imageLink: string;
   readonly infoLink: string;
 }
-
-const SearchPanel = () => {
+const SearchPanel = (props: any) => {
   const [moreBoksStep] = useState<number>(10);
   const [loading, setLoading] = useState<boolean>(false);
   const [booksResult, setBooksResult] = useState<Book[]>([]);
@@ -71,7 +71,7 @@ const SearchPanel = () => {
 
   const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    if (searchString && searchString !== activeSearchString && !errorSearch) {
+    if (searchString !== activeSearchString && !errorSearch) {
       updateData(getBooksData, setBooksResult, maxResults);
       setLoading(true);
       setBooksLiveResult([]);
@@ -105,15 +105,17 @@ const SearchPanel = () => {
 
   const renderItems = booksResult.map(
     (book: Book, i): React.ReactNode => {
-      const { title, infoLink, imageLink } = book;
+      const { title, imageLink, id } = book;
       const configuredTitle: string = configTitle(title, 20);
 
       return (
-        <li className="result-list-item" key={i}>
-          <a href={infoLink}>
-            <img src={imageLink} title={title} alt={title} />
-            <p>{configuredTitle}</p>
-          </a>
+        <li
+          className="result-list-item"
+          key={i}
+          onClick={() => props.openBookDetails(id)}
+        >
+          <img src={imageLink} title={title} alt={title} />
+          <p>{configuredTitle}</p>
         </li>
       );
     }
@@ -122,16 +124,18 @@ const SearchPanel = () => {
   const renderLiveItems = booksLiveResult.map(
     (book: Book, i): React.ReactNode => {
       const configuredTitle: string = configTitle(book.title, 40);
-      const { infoLink } = book;
+      const { id } = book;
       const iconLink: string =
         "https://www.flaticon.com/svg/static/icons/svg/482/482631.svg";
 
       return (
-        <li key={i}>
-          <a href={infoLink} className="search-live-list-item">
-            <img src={iconLink} alt="icon" />
-            {configuredTitle}
-          </a>
+        <li
+          key={i}
+          onClick={() => props.openBookDetails(id)}
+          className="search-live-list-item"
+        >
+          <img src={iconLink} alt="icon" />
+          {configuredTitle}
         </li>
       );
     }
