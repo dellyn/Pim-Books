@@ -1,6 +1,7 @@
 const apiBase: string = process.env.REACT_APP_API_BASE!;
 const apiKey: string = process.env.REACT_APP_API_KEY!;
 const bookPlaceholder: string = process.env.REACT_APP_BOOK_PLACEHOLDER!;
+const apiSearchQuery = "?q=";
 
 const getResource = async (url: string) => {
   const res = await fetch(url);
@@ -11,12 +12,9 @@ const getResource = async (url: string) => {
 };
 
 export const getBookData = async (bookId: string) => {
-  const url: string = configUrl(apiBase, bookId, "&", apiKey);
+  const url: string = `${apiBase}/${bookId}`;
   const res = await getResource(url);
-
-  const book = res.items.find((item: any) => item.id === bookId);
-
-  return transformActiveBookData(book);
+  return transformActiveBookData(res);
 };
 
 export const getBooksData = async (
@@ -24,7 +22,13 @@ export const getBooksData = async (
   maxResults: number
 ) => {
   const params: string = `&startIndex=0&maxResults=${maxResults}&`;
-  const url: string = configUrl(apiBase, searchString, params, apiKey);
+  const url: string = configUrl(
+    apiBase,
+    apiSearchQuery,
+    searchString,
+    params,
+    apiKey
+  );
 
   const res = await getResource(url);
   return res.items.map(transformSearchData);
@@ -32,7 +36,7 @@ export const getBooksData = async (
 
 export const getLiveBooksData = async (searchString: string) => {
   const params: string = "&startIndex=0&maxResults=8&";
-  const url = configUrl(apiBase, searchString, params, apiKey);
+  const url = configUrl(apiBase, apiSearchQuery, searchString, params, apiKey);
 
   const res = await getResource(url);
   return res.items.map(transformLiveData);
@@ -61,15 +65,30 @@ const transformSearchData = (book: any) => {
 };
 
 const transformActiveBookData = (book: any) => {
-  const volumeInfo = book.volumeInfo || null;
-  const { imageLinks, title, categories, description, publisher } = volumeInfo;
+  const { volumeInfo, id } = book || null;
+  const {
+    title,
+    description,
+    publisher,
+    infoLink,
+    authors,
+    publishedDate,
+    printedPageCount,
+    categories,
+    language,
+  } = volumeInfo;
+  const imageLinkConfig = `https://books.google.com/books/content/images/frontcover/${id}?fife=w400-h600`;
 
   return {
     title: title,
     publisher: publisher,
+    description: description,
+    infoLink: infoLink,
+    publishedDate: publishedDate,
+    pageCount: printedPageCount,
     categories: categories || [],
-    description: description || null,
-    infoLink: (volumeInfo && volumeInfo.infoLink) || null,
-    imageLink: (imageLinks && imageLinks.thumbnail) || bookPlaceholder,
+    authors: authors || [],
+    language: language,
+    imageLink: imageLinkConfig || bookPlaceholder,
   };
 };

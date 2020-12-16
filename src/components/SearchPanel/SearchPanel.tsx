@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getBooksData, getLiveBooksData } from "../../service/BookService";
 import Preloader from "../Preloader/Preloader";
 import "./SearchPanel.scss";
+import { Link } from "react-router-dom";
 
 interface Book {
   readonly id: number | string;
@@ -49,7 +50,7 @@ const SearchPanel = (props: any) => {
   useEffect(() => {
     setErrorSearch(false);
 
-    if (searchString) {
+    if (searchString.trim()) {
       const enterInterval = setTimeout(() => {
         updateData(getLiveBooksData, setBooksLiveResult);
       }, 500);
@@ -114,8 +115,10 @@ const SearchPanel = (props: any) => {
           key={i}
           onClick={() => props.openBookDetails(id)}
         >
-          <img src={imageLink} title={title} alt={title} />
-          <p>{configuredTitle}</p>
+          <Link to={"/book/" + id}>
+            <img src={imageLink} title={title} alt={title} />
+            <p>{configuredTitle}</p>
+          </Link>
         </li>
       );
     }
