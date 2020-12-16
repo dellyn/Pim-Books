@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import "./BookDetails.scss";
 import Preloader from "../Preloader/Preloader";
@@ -94,3 +95,4 @@ const BookDetails = (data: any) => {
 };
 
 export default BookDetails;
+
