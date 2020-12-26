@@ -31,6 +31,14 @@ li {
   margin: 0 auto;
   display: block;
 }
+button {
+  border: none;
+  outline: none;
+  text-align: center;
+  background-color: transparent;
+  cursor: pointer;
+}
+
 .logo {
   text-align: center;
   margin-top: 17vh;
