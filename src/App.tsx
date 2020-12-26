@@ -25,6 +25,7 @@ const App = () => {
           <Route path="/book/:id">
             <BookDetails activeBookId={activeBookId} />
           </Route>
+          <Route>page not found</Route>
         </Switch>
       </div>
     </Router>
