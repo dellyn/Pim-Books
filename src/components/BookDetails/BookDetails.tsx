@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./BookDetails.scss";
 import Preloader from "../Preloader/Preloader";
-
 import { getBookData } from "../../service/BookService";
 
 const BookDetails = (data: any) => {
   const [activeBookData, setActiveBookData] = useState<any>(null);
   const [descStatus, setDescStatus] = useState<boolean>(false);
   const { activeBookId } = data;
-
   activeBookId && localStorage.setItem("activeBookId", activeBookId);
   const storageBookId: string = localStorage.getItem("activeBookId")!;
 
@@ -23,7 +21,11 @@ const BookDetails = (data: any) => {
   }, [activeBookId]);
 
   if (!activeBookData) {
-    return <Preloader />;
+    return (
+      <div className="center">
+        <Preloader />
+      </div>
+    );
   }
 
   const {
@@ -39,20 +41,20 @@ const BookDetails = (data: any) => {
     imageLink,
   } = activeBookData;
 
+  const maxDescLength = 225;
+
   const renderItems = (array: string[]) => {
     return array.map((item: any, i: number) => <span key={i}>{item}</span>);
   };
-  const renderDescription = (string: string) => {
-    console.log(string.length);
 
+  const renderDescription = (string: string) => {
     const str = string.replaceAll(/<.?.>/g, "");
-    const max = 275;
-    if (str.length < max || descStatus) {
+    if (str.length < maxDescLength || descStatus) {
       return str;
     }
-
-    return str.slice(0, max) + "..";
+    return str.slice(0, maxDescLength) + "..";
   };
+
   return (
     <div className="book-details">
       <div className="container">
@@ -74,7 +76,7 @@ const BookDetails = (data: any) => {
             <div className="book-info_desc">
               <span className="key">About Book:</span>{" "}
               <p>{renderDescription(description)}</p>
-              {!descStatus && (
+              {!descStatus && description.length > maxDescLength && (
                 <div className="desc-wrapper">
                   <i className="arrow down"></i>
                   <button onClick={() => setDescStatus(true)}>Show All</button>
@@ -101,7 +103,7 @@ const BookDetails = (data: any) => {
               </li>
 
               <li>
-                <span className="key">Languages:</span>
+                <span className="key">Language:</span>
                 <span>{language}</span>
               </li>
             </ul>

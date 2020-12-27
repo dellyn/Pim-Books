@@ -1,5 +1,7 @@
 $border: rgb(227, 237, 238);
 $lightBlue: rgb(204, 237, 243);
+$yellow: #ffb92e;
+
 .search {
   &-live-list {
     position: absolute;
@@ -136,7 +138,7 @@ $lightBlue: rgb(204, 237, 243);
       justify-content: center;
 
       &-btn {
-        background-color: $lightBlue;
+        background-color: $yellow;
         padding: 5px 10px;
         box-sizing: border-box;
         border: none;

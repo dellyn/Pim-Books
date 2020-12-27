@@ -1,4 +1,6 @@
 $darkMint: rgb(0, 86, 98);
+$yellow: #ffb92e;
+
 body {
   background-color: $darkMint;
   color: #fff;
@@ -44,8 +46,15 @@ button {
   margin-top: 17vh;
   font-size: 80px;
   span {
-    color: rgb(253, 215, 108);
+    color: $yellow;
   }
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 @media screen and (max-width: 700px) {
   .container {
