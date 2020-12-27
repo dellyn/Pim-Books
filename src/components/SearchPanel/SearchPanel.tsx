@@ -3,6 +3,7 @@ import { getBooksData, getLiveBooksData } from "../../service/BookService";
 import Preloader from "../Preloader/Preloader";
 import "./SearchPanel.scss";
 import { Link } from "react-router-dom";
+import bookPlaceholder from "../../images/book-cover.jpg";
 
 interface Book {
   readonly id: number | string;
@@ -116,7 +117,7 @@ const SearchPanel = (props: any) => {
           onClick={() => props.openBookDetails(id)}
         >
           <Link to={"/book/" + id}>
-            <img src={imageLink} title={title} alt={title} />
+            <img src={imageLink || bookPlaceholder} />
             <p>{configuredTitle}</p>
           </Link>
         </li>

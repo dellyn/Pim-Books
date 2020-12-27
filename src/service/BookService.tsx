@@ -1,6 +1,6 @@
 const apiBase: string = process.env.REACT_APP_API_BASE!;
 const apiKey: string = process.env.REACT_APP_API_KEY!;
-const bookPlaceholder: string = process.env.REACT_APP_BOOK_PLACEHOLDER!;
+// const bookPlaceholder: string = process.env.REACT_APP_BOOK_PLACEHOLDER!;
 const apiSearchQuery = "?q=";
 
 const getResource = async (url: string) => {
@@ -60,7 +60,7 @@ const transformSearchData = (book: any) => {
     id: id,
     title: title,
     infoLink: (volumeInfo && volumeInfo.infoLink) || null,
-    imageLink: (imageLinks && imageLinks.thumbnail) || bookPlaceholder,
+    imageLink: (imageLinks && imageLinks.thumbnail) || null,
   };
 };
 
@@ -80,15 +80,15 @@ const transformActiveBookData = (book: any) => {
   const imageLinkConfig = `https://books.google.com/books/content/images/frontcover/${id}?fife=w400-h600`;
 
   return {
-    title: title,
-    publisher: publisher,
-    description: description,
-    infoLink: infoLink,
-    publishedDate: publishedDate,
-    pageCount: printedPageCount,
-    categories: categories || [],
-    authors: authors || [],
-    language: language,
-    imageLink: imageLinkConfig || bookPlaceholder,
+    title: title || "Unknown",
+    publisher: publisher || "Unknown",
+    description: description || "See more info by link",
+    infoLink: infoLink || "",
+    publishedDate: publishedDate || "Unknown",
+    pageCount: printedPageCount || "Unknown",
+    categories: categories || ["Unknown"],
+    authors: authors || ["Unknown"],
+    language: language || "Unknown",
+    imageLink: imageLinkConfig || null,
   };
 };
