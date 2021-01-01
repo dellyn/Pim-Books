@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/Pim-Books/static/css/main.1c2a66c9.chunk.css",
-    "main.js": "/Pim-Books/static/js/main.48463701.chunk.js",
-    "main.js.map": "/Pim-Books/static/js/main.48463701.chunk.js.map",
+    "main.js": "/Pim-Books/static/js/main.c9391994.chunk.js",
+    "main.js.map": "/Pim-Books/static/js/main.c9391994.chunk.js.map",
     "runtime-main.js": "/Pim-Books/static/js/runtime-main.da2929be.js",
     "runtime-main.js.map": "/Pim-Books/static/js/runtime-main.da2929be.js.map",
     "static/js/2.a9d9c481.chunk.js": "/Pim-Books/static/js/2.a9d9c481.chunk.js",
@@ -16,6 +16,6 @@
     "static/js/runtime-main.da2929be.js",
     "static/js/2.a9d9c481.chunk.js",
     "static/css/main.1c2a66c9.chunk.css",
-    "static/js/main.48463701.chunk.js"
+    "static/js/main.c9391994.chunk.js"
   ]
 }
