@@ -5,105 +5,102 @@ $yellow: #ffb92e;
   background-color: rgb(255, 255, 255);
   color: #000;
   min-height: 100vh;
+}
 
-  &-cover {
-    width: 100%;
-    height: 180px;
+.cover {
+  width: 100%;
+  height: 180px;
+  position: absolute;
+  top: 20px;
+  left: 0;
+  overflow: hidden;
+
+  .cover_block {
+    height: 100%;
+    width: 100vw;
     position: absolute;
-    top: 20px;
+    top: 0;
     left: 0;
-    overflow: hidden;
+    background-color: rgba(218, 142, 0, 0.327);
+    transform: scale(1.1);
+    filter: blur(10px) brightness(80%);
+  }
+}
 
-    div {
-      height: 100%;
-      width: 100vw;
-      position: absolute;
-      top: 0;
-      left: 0;
-      background-color: rgba(218, 142, 0, 0.327);
-      transform: scale(1.1);
-      filter: blur(10px) brightness(80%);
-    }
+.book {
+  z-index: 1;
+  position: relative;
+  display: flex;
+  padding-top: 50px;
+}
+
+.preview {
+  text-align: center;
+
+  &_img {
+    width: 250px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    border-radius: 15px;
   }
 
-  .book {
-    z-index: 1;
-    position: relative;
-    display: flex;
-    padding-top: 50px;
+  &_link {
+    display: block;
+    width: 89px;
+    margin: 20px auto;
+  }
+}
 
-    &-info {
-      margin-left: 30px;
+.info {
+  margin-left: 30px;
 
-      &_title {
-        font-size: 43px;
-        color: #fff;
-        height: 70px;
-        overflow: hidden;
-      }
-      &_authors {
-        color: #fff;
-        font-size: 17px;
-        margin: 20px 0px 60px 0px;
-        height: 15px;
-      }
+  &_title {
+    font-size: 43px;
+    color: #fff;
+    height: 70px;
+    overflow: hidden;
+  }
 
-      .stars {
-        display: flex;
-        &-item {
-          background-color: $yellow;
-          width: 15px;
-          height: 15px;
-          margin-right: 5px;
+  &_authors {
+    color: #fff;
+    font-size: 17px;
+    margin: 20px 0px 60px 0px;
+    height: 15px;
+  }
+
+  .description {
+    &_wrapper {
+      display: flex;
+      align-items: center;
+
+      button {
+        font-size: 15px;
+        color: #af7500;
+        margin-top: 5px;
+        &:hover {
+          color: #ffba2e;
         }
-      }
-      &_desc {
-        .desc-wrapper {
-          display: flex;
-          align-items: center;
-          button {
-            font-size: 15px;
-            color: #af7500;
-            margin-top: 5px;
-            &:hover {
-              color: #ffba2e;
-            }
-          }
-        }
-      }
-      &_list {
-        margin-top: 10px;
-        li {
-          margin: 10px 0px;
-        }
-        .categories-wrapper {
-          span:not(.key) {
-            font-size: 12px;
-            background-color: #ffba2e;
-            padding: 5px;
-            border-radius: 4px;
-            display: inline-block;
-            margin: 2px 5px 2px 0px;
-          }
-        }
-      }
-      .key {
-        margin-right: 5px;
-        font-weight: bold;
       }
     }
-    &-preview {
-      text-align: center;
+  }
+  .list {
+    margin-top: 10px;
 
-      img {
-        width: 250px;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-        border-radius: 15px;
-      }
-      &_link {
-        display: block;
-        width: 89px;
-        margin: 20px auto;
+    li {
+      margin: 10px 0px;
+    }
+    &_key {
+      margin-right: 5px;
+      font-weight: bold;
+    }
+
+    &_categories {
+      span:not(.list_key) {
+        font-size: 12px;
+        background-color: #ffba2e;
+        padding: 5px;
+        border-radius: 4px;
+        display: inline-block;
+        margin: 2px 5px 2px 0px;
       }
     }
   }
@@ -118,6 +115,11 @@ $yellow: #ffb92e;
   font-size: 14px;
   font-family: "Montserrat";
   margin-top: 20px;
+
+  transition: 0.05s ease-out;
+  &:hover {
+    background-color: #f5a300;
+  }
 }
 
 i.arrow {
@@ -145,4 +147,35 @@ i.up {
 i.down {
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
+}
+
+@media screen and (max-width: 750px) {
+  .book-details {
+    .book {
+      .preview {
+        img {
+          width: 33vw;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .book-details {
+    .book {
+      flex-direction: column-reverse;
+      .info {
+        margin-left: 0;
+      }
+      .preview {
+        display: flex;
+        align-items: center;
+        img {
+          width: 45vw;
+          max-width: 200px;
+        }
+      }
+    }
+  }
 }

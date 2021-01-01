@@ -7,6 +7,7 @@ const BookDetails = (data: any) => {
   const [activeBookData, setActiveBookData] = useState<any>(null);
   const [descStatus, setDescStatus] = useState<boolean>(false);
   const { activeBookId } = data;
+
   activeBookId && localStorage.setItem("activeBookId", activeBookId);
   const storageBookId: string = localStorage.getItem("activeBookId")!;
 
@@ -40,15 +41,14 @@ const BookDetails = (data: any) => {
     language,
     imageLink,
   } = activeBookData;
-
   const maxDescLength = 225;
 
   const renderItems = (array: string[]) => {
     return array.map((item: any, i: number) => <span key={i}>{item}</span>);
   };
 
-  const renderDescription = (string: string) => {
-    const str = string.replaceAll(/<.?.>/g, "");
+  const renderDescription = (description: string): string => {
+    const str = description.replaceAll(/(\<(\/?[^>]+)>)/g, " ");
     if (str.length < maxDescLength || descStatus) {
       return str;
     }
@@ -58,52 +58,54 @@ const BookDetails = (data: any) => {
   return (
     <div className="book-details">
       <div className="container">
-        <div className="book-details-cover">
-          <div></div>
+        <div className="cover">
+          <div className="cover_block"></div>
         </div>
+        
         <div className="book">
-          <div className="book-preview">
-            <img src={imageLink} alt="book" className="book-img" />
-            <a href={infoLink} className="book-preview_link button-styles">
+          <div className="preview">
+            <img src={imageLink} alt="book" className="preview_img" />
+            <a href={infoLink} className="preview_link button-styles">
               Learn More
             </a>
           </div>
-          <div className="book-info">
-            <h2 className="book-info_title">{title}</h2>
-            <div className="book-info_authors">
+
+          <div className="info">
+            <h2 className="info_title">{title}</h2>
+            <div className="info_authors">
               <p>{renderItems(authors)}</p>
             </div>
-            <div className="book-info_desc">
+
+            <div className="description">
               <span className="key">About Book:</span>{" "}
               <p>{renderDescription(description)}</p>
               {!descStatus && description.length > maxDescLength && (
-                <div className="desc-wrapper">
+                <div className="description_wrapper">
                   <i className="arrow down"></i>
                   <button onClick={() => setDescStatus(true)}>Show All</button>
                 </div>
               )}
             </div>
-            <ul className="book-info_list">
-              <li className="categories-wrapper">
-                <span className="key">Categories:</span>
+
+            <ul className="list">
+              <li className="list_categories">
+                <span className="list_key">Categories:</span>
                 {renderItems(categories)}
               </li>
               <li>
-                <span className="key">Publish Date:</span>
+                <span className="list_key">Publish Date:</span>
                 <span>{publishedDate}</span>
               </li>
               <li>
-                <span className="key">Print Page:</span>
+                <span className="list_key">Print Page:</span>
                 <span>{pageCount}</span>
               </li>
-
               <li>
-                <span className="key">Publisher:</span>
+                <span className="list_key">Publisher:</span>
                 <span>{publisher}</span>
               </li>
-
               <li>
-                <span className="key">Language:</span>
+                <span className="list_key">Language:</span>
                 <span>{language}</span>
               </li>
             </ul>

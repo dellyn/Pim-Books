@@ -1,6 +1,5 @@
 const apiBase: string = process.env.REACT_APP_API_BASE!;
 const apiKey: string = process.env.REACT_APP_API_KEY!;
-// const bookPlaceholder: string = process.env.REACT_APP_BOOK_PLACEHOLDER!;
 const apiSearchQuery = "?q=";
 
 const getResource = async (url: string) => {

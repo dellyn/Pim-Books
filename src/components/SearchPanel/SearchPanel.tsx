@@ -112,11 +112,11 @@ const SearchPanel = (props: any) => {
 
       return (
         <li
-          className="result-list-item"
+          className="result_list-item"
           key={i}
           onClick={() => props.openBookDetails(id)}
         >
-          <Link to={"/book/" + id}>
+          <Link to={"/pim-book/book/" + id}>
             <img src={imageLink || bookPlaceholder} />
             <p>{configuredTitle}</p>
           </Link>
@@ -127,8 +127,8 @@ const SearchPanel = (props: any) => {
 
   const renderLiveItems = booksLiveResult.map(
     (book: Book, i): React.ReactNode => {
-      const configuredTitle: string = configTitle(book.title, 40);
       const { id } = book;
+      const configuredTitle: string = configTitle(book.title, 40);
       const iconLink: string =
         "https://www.flaticon.com/svg/static/icons/svg/482/482631.svg";
 
@@ -136,10 +136,12 @@ const SearchPanel = (props: any) => {
         <li
           key={i}
           onClick={() => props.openBookDetails(id)}
-          className="search-live-list-item"
+          className="live_list-item"
         >
-          <img src={iconLink} alt="icon" />
-          {configuredTitle}
+          <Link to={"/pim-book/book/" + id}>
+            <img src={iconLink} className="live_icon" alt="icon" />
+            {configuredTitle}
+          </Link>
         </li>
       );
     }
@@ -150,7 +152,7 @@ const SearchPanel = (props: any) => {
 
     if (!moreBookLoading && len < 40 && !loading && len === maxResults) {
       return (
-        <button onClick={getMoreBooks} className="more-books-btn">
+        <button onClick={getMoreBooks} className="more-books_btn">
           Show more books
         </button>
       );
@@ -160,10 +162,11 @@ const SearchPanel = (props: any) => {
 
   const ResultNotFound = () => {
     return (
-      <li className="search-live-list-item results-not-found">
+      <li className="live_list-item results-not-found">
         <img
           src="https://www.flaticon.com/svg/static/icons/svg/482/482631.svg"
-          alt="search"
+          className="live_icon"
+          alt="icon"
         />
         No books were found for "<b>{searchString}</b>"
       </li>
@@ -175,43 +178,40 @@ const SearchPanel = (props: any) => {
 
   return (
     <div className="search">
-      <form
-        onSubmit={onSearchSubmit}
-        className={
-          formStyleLogic ? "search-form-live search-form" : "search-form"
-        }
-      >
-        <div className="search-labels">
-          <input
-            className="search-labels-input"
-            type="text"
-            onChange={onSearchChange}
-            value={searchString}
-            placeholder="Search"
-            autoFocus={true}
-          />
-          <input
-            className="search-labels-button"
-            type="submit"
-            value="Search"
-          />
-        </div>
+      <div className="container">
+        <form
+          onSubmit={onSearchSubmit}
+          className={formStyleLogic ? "form_live form" : "form"}
+        >
+          <div className="labels">
+            <input
+              className="labels_input"
+              type="text"
+              onChange={onSearchChange}
+              value={searchString}
+              placeholder="Search"
+              autoFocus={true}
+            />
+            <input className="labels_button" type="submit" value="Search" />
+          </div>
 
-        <ul className="search-live-list">
-          {!liveResultErrLogic ? renderLiveItems : <ResultNotFound />}
-        </ul>
+          <ul className="live_list">
+            {!liveResultErrLogic ? renderLiveItems : <ResultNotFound />}
+          </ul>
 
-        <p className="search-status">
-          {booksResult.length !== 0 && `Query result: '${activeSearchString}'`}
-        </p>
-      </form>
+          <p className="status">
+            {booksResult.length !== 0 &&
+              `Query result: '${activeSearchString}'`}
+          </p>
+        </form>
 
-      <div className="result">
-        <ul className="result-list">
-          {!loading ? renderItems : <Preloader />}
-        </ul>
-        <div className="more-books">
-          <MoreBooksElem />
+        <div className="result">
+          <ul className="result_list">
+            {!loading ? renderItems : <Preloader />}
+          </ul>
+          <div className="more-books">
+            <MoreBooksElem />
+          </div>
         </div>
       </div>
     </div>
