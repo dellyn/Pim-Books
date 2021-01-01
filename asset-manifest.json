@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/pim-book/static/css/main.1c2a66c9.chunk.css",
-    "main.js": "/pim-book/static/js/main.b1e66f5d.chunk.js",
-    "main.js.map": "/pim-book/static/js/main.b1e66f5d.chunk.js.map",
+    "main.js": "/pim-book/static/js/main.330dd4eb.chunk.js",
+    "main.js.map": "/pim-book/static/js/main.330dd4eb.chunk.js.map",
     "runtime-main.js": "/pim-book/static/js/runtime-main.71fb0d76.js",
     "runtime-main.js.map": "/pim-book/static/js/runtime-main.71fb0d76.js.map",
     "static/js/2.b09d4410.chunk.js": "/pim-book/static/js/2.b09d4410.chunk.js",
@@ -16,6 +16,6 @@
     "static/js/runtime-main.71fb0d76.js",
     "static/js/2.b09d4410.chunk.js",
     "static/css/main.1c2a66c9.chunk.css",
-    "static/js/main.b1e66f5d.chunk.js"
+    "static/js/main.330dd4eb.chunk.js"
   ]
 }
